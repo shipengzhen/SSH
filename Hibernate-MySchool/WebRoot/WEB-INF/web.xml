@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+	id="WebApp_ID" version="3.1">
+	<display-name></display-name>
+	<servlet>
+		<!-- 定义一个Servlet名字 -->
+		<servlet-name>GradeServlet</servlet-name>
+		<!-- 要定义的Servlet类的全限定名 -->
+		<servlet-class>com.bdqn.spz.hibernate.web.GradeServlet</servlet-class>
+	</servlet>
+	<!--在Servlet和URL样式之间定义了一个映射-->
+	<servlet-mapping>
+		<!-- 给出的Servlet名字必须是在<servlet>元素中声明过的Servlet的名字 -->
+		<servlet-name>GradeServlet</servlet-name>
+		<!-- 指定对应于Servlet的URL路径，该路径是相对于web应用程序上下文根的路径 -->
+		<url-pattern>/GradeServlet</url-pattern>
+	</servlet-mapping>
+
+	<filter>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<filter-class>com.bdqn.spz.hibernate.web.OpenSessionInViewFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>OpenSessionInViewFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+	<welcome-file-list>
+		<welcome-file>GradeServlet</welcome-file>
+	</welcome-file-list>
+</web-app>

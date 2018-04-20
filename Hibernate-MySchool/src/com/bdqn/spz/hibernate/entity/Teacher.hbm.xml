@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.bdqn.spz.hibernate.entity.Teacher" table="Teacher" dynamic-update="true">
+    	<!--教师编号-->
+    	<id name="teacherId" column="teacherId" type="java.lang.Integer">
+            <generator class="assigned"/>
+        </id>
+        <!--教师名称-->
+        <property name="teacherName" column="teacherName" type="java.lang.String"></property>
+        <!--年龄-->
+        <property name="age" column="age" type="java.lang.Integer"></property>
+        <!--教龄 -->
+        <property name="teacherYear" column="teacherYear" type="java.lang.Integer"></property>
+        <!--所教年级(多对一)-->
+        <many-to-one name="grade" column="gradeId" class="com.bdqn.spz.hibernate.entity.Grade"></many-to-one>
+        <!--所教学生的集合(多对多)-->
+       	<bag name="students" table="relation_ts">
+       		<key column="teacherId"></key>
+       		<many-to-many class="com.bdqn.spz.hibernate.entity.Student" column="studentNo"></many-to-many>
+       	</bag>
+	</class>
+</hibernate-mapping>

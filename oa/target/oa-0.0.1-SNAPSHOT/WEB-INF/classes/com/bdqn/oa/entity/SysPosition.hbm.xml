@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- 
+  	职位表
+-->
+<hibernate-mapping>
+    <class name="com.bdqn.oa.entity.SysPosition" table="SYS_POSITION" schema="SCOTT">
+        <id name="pid" type="java.lang.Integer">
+            <column name="PID" precision="6" scale="0" />
+            <generator class="assigned" />
+        </id>
+        <property name="pname" type="java.lang.String">
+            <column name="PNAME" length="20" not-null="true" />
+        </property>
+        <set name="sysEmployees" inverse="true">
+            <key>
+                <column name="POSITION_ID" precision="6" scale="0" not-null="true" />
+            </key>
+            <one-to-many class="com.bdqn.oa.entity.SysEmployee" />
+        </set>
+    </class>
+</hibernate-mapping>

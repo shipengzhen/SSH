@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- 
+   请假表
+-->
+<hibernate-mapping>
+    <class name="com.bdqn.oa.entity.SysLeave" table="SYS_LEAVE" schema="SCOTT">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" precision="6" scale="0" />
+            <!-- 序列名字 xx_id-->
+           	 <generator class="increment">
+             	<param name="sequence">SYS_leave_id</param>
+            </generator>
+        </id>
+        <many-to-one name="sysEmployeeByProposerEid" class="com.bdqn.oa.entity.SysEmployee" fetch="select">
+            <column name="PROPOSER_EID" precision="6" scale="0" not-null="true" />
+        </many-to-one>
+        <many-to-one name="sysEmployeeByExecutorEid" class="com.bdqn.oa.entity.SysEmployee" fetch="select">
+            <column name="EXECUTOR_EID" precision="6" scale="0" not-null="true" />
+        </many-to-one>
+        <property name="begindate" type="java.util.Date">
+            <column name="BEGINDATE" length="7" />
+        </property>
+        <property name="closuredate" type="java.util.Date">
+            <column name="CLOSUREDATE" length="7" />
+        </property>
+        <property name="days" type="java.lang.Integer">
+            <column name="DAYS" precision="6" scale="0" />
+        </property>
+        <property name="event" type="java.lang.String">
+            <column name="EVENT" />
+        </property>
+        <property name="leavetype" type="java.lang.String">
+            <column name="LEAVETYPE" length="50" />
+        </property>
+        <property name="status" type="java.lang.String">
+            <column name="STATUS" length="20" />
+        </property>
+        <!-- <set name="sysLeaveResults" inverse="true">
+            <key>
+                <column name="LEAVE_ID" precision="6" scale="0" not-null="true" />
+            </key>
+            <one-to-many class="com.bdqn.oa.entity.SysLeaveResult" />
+        </set> -->
+        <one-to-one name="leaveResult" cascade="save-update" class="com.bdqn.oa.entity.SysLeaveResult" property-ref="sysLeave"></one-to-one>
+    </class>
+</hibernate-mapping>

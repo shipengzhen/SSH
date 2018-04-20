@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<constant name="struts.custom.i18n.resources" value="message" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.ui.theme" value="simple" />
+
+	<package name="default" namespace="/" extends="struts-default">
+
+		<interceptors>
+			<!-- 定义拦截器 -->
+			<!--Action的执行时间 -->
+			<interceptor name="myTimer"
+				class="com.spz.bdqn.house.interceptor.MyTimerInterceptor">
+			</interceptor>
+			<!-- 权限控制拦截器 -->
+			<interceptor name="myAuthorization"
+				class="com.spz.bdqn.house.interceptor.AuthorizationInterceptor">
+			</interceptor>
+			<!-- 定义拦截器栈 -->
+			<interceptor-stack name="myStack">
+				<!--指定引用的拦截器 -->
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="myAuthorization"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<!--定义默认的拦截器引用 -->
+		<default-interceptor-ref name="defaultStack"></default-interceptor-ref>
+
+		<default-action-ref name="defaultAction"></default-action-ref>
+		<global-results>
+			<result name="500">500.jsp</result>
+		</global-results>
+		<action name="defaultAction">
+			<result>404.jsp</result>
+		</action>
+
+		<action name="dologin" class="com.spz.bdqn.house.action.UserAction"
+			method="dologin">
+			<result type="redirectAction">
+				${isnext}?username=${user.username}
+				<!-- <param name="encode">true</param> -->
+			</result>
+			<result name="error">page/login_struts2.jsp</result>
+			<result name="input">page/login_struts2.jsp</result>
+		</action>
+		<action name="admin" class="com.spz.bdqn.house.action.UserAction"
+			method="admin">
+			<result name="success">page/login_success.jsp</result>
+			<result name="login">page/login_struts2.jsp</result>
+			<interceptor-ref name="myStack" />
+		</action>
+		<action name="user" class="com.spz.bdqn.house.action.UserAction"
+			method="user">
+			<result name="success">page/login_success2.jsp</result>
+			<result name="login">page/login_struts2.jsp</result>
+			<interceptor-ref name="myStack" />
+		</action>
+
+		<action name="register" class="com.spz.bdqn.house.action.UserAction"
+			method="register">
+			<result name="success">page/login_struts2.jsp</result>
+			<result name="error">page/register.jsp</result>
+			<result name="input">page/register.jsp</result>
+		</action>
+
+		<action name="listDataTransfer" class="com.spz.bdqn.house.action.ListDataTransferAction">
+			<result>demonstration/list_result.jsp</result>
+		</action>
+		<action name="ArraysDataTransfer"
+			class="com.spz.bdqn.house.action.ArraysDataTransferAction">
+			<result>demonstration/array_result.jsp</result>
+		</action>
+
+		<action name="dateConvert" class="com.spz.bdqn.house.action.DateConvertAction">
+			<result name="input">demonstration/date_input.jsp</result>
+			<result name="success">demonstration/date_result.jsp</result>
+		</action>
+
+		<action name="action" class="com.spz.bdqn.house.action.MyTimerAction">
+			<result>demonstration/timer_input.jsp</result>
+			<!--为Action指定拦截器引用 -->
+			<interceptor-ref name="myTimer"></interceptor-ref>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+
+		<!-- 上传单个文件文件 -->
+		<action name="upload" class="com.spz.bdqn.house.action.UploadAction">
+			<param name="savePath">/upload</param>
+			<result name="success">demonstration/upload_success.jsp</result>
+		</action>
+		<!-- 上传多个文件 -->
+		<action name="uploads" class="com.spz.bdqn.house.action.UploadsAction">
+			<param name="savePath">/upload</param>
+			<result name="success">demonstration/uploads_success.jsp</result>
+		</action>
+		<!-- 下载文件 -->
+		<action name="download" class="com.spz.bdqn.house.action.FileDownAction">
+			<param name="inputPath">/upload</param>
+			<result name="success" type="stream">
+				<param name="contentType">application/octet-stream</param>
+				<param name="inputName">inputStream</param>
+				<param name="contentDisposition">attachment;filename="${fileName}"</param>
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+	</package>
+</struts>    

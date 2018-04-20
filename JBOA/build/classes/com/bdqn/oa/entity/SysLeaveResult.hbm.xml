@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- 
+   请假审核表
+-->
+<hibernate-mapping>
+    <class name="com.bdqn.oa.entity.SysLeaveResult" table="SYS_LEAVE_RESULT" schema="SCOTT">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" precision="6" scale="0" />
+             <!-- 序列名字 xx_id-->
+           	 <generator class="increment">
+             	<param name="sequence">SYS_leave_result_id</param>
+            </generator>
+        </id>
+        <property name="leave_id" type="integer">
+        	<column name="leave_id"  />
+        </property>
+        <many-to-one name="sysLeave" class="com.bdqn.oa.entity.SysLeave" cascade="save-update" unique="true" insert="false" update="false">
+ 			<column name="leave_id"  />
+        </many-to-one>
+        <property name="shdate" type="java.util.Date">
+            <column name="SHDATE" length="7" />
+        </property>
+        <property name="shsuggestion" type="java.lang.String">
+            <column name="SHSUGGESTION" />
+        </property>
+    </class>
+</hibernate-mapping>

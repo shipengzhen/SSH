@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-3.2.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-3.2.xsd">
+
+	<!--方式一 -->
+	<!-- 加载Hibernate配置 -->
+	<!-- <bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="configLocation" value="classpath:hibernate.cfg.xml"></property>
+	</bean> -->
+	<!--方式二 -->
+	 <!-- 读取数据库配置文件 -->
+    <context:property-placeholder location="classpath:database.properties"/>
+	<!-- 定义dbcp数据源 -->
+	<!-- JNDI获取数据源(使用dbcp连接池) -->  
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope="singleton">
+    		<property name="driverClassName" value="${driver}" />  
+			<property name="url" value="${url}" />  
+			<property name="username" value="${user}" />  
+			<property name="password" value="${password}" />
+			<property name="initialSize" value="${initialSize}"/>
+			<property name="maxActive" value="${maxActive}"/>
+			<property name="maxIdle" value="${maxIdle}"/>
+			<property name="minIdle" value="${minIdle}"/>
+			<property name="maxWait" value="${maxWait}"/>
+			<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}"/>
+			<property name="removeAbandoned" value="${removeAbandoned}"/>
+			<!-- sql 心跳 -->
+			<property name= "testWhileIdle" value="true"/>
+			<property name= "testOnBorrow" value="false"/>
+			<property name= "testOnReturn" value="false"/>
+			<!-- <property name= "validationQuery" value="select 1"/> -->
+			<property name= "timeBetweenEvictionRunsMillis" value="60000"/>
+			<property name= "numTestsPerEvictionRun" value="${maxActive}"/>
+    </bean>
+	<!-- 定义SessionFactory Bean org.springframework.orm.hibernate3.LocalSessionFactoryBean-->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<!-- 为LocalSessionFactoryBean(AnnotationSessionFactoryBean)注入定义好的数据源 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 添加Hibernate配置参数 -->
+		<property name="hibernateProperties">
+			<props>
+				<!--使用的数据库类型 -->
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<!--是否将运行期生成的SQL输出到日志以供调试 -->
+				<prop key="hibernate.show_sql">true</prop>
+				<!--是否格式化SQL -->
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<!-- 默认它是auto的，它会自动去classpath下寻找 -->
+				<!-- <prop key="javax.persistence.validation.mode">none</prop> -->
+			</props>
+		</property>
+		<!-- 添加注解映射 -->
+		<!-- <property name="annotatedClasses" value="com.spz.house.ssh.entity">
+			<list>
+				<value>com.spz.bdqn.house.ssh.entity.User</value> 
+			</list>
+		</property> -->
+		<!-- 添加对象关系映射文件 -->
+		<property name="mappingDirectoryLocations" value="classpath:com/spz/bdqn/house/ssh/entity/">
+			<!-- <list>
+				<value>classpath:com/spz/bdqn/house/ssh/entity/User.hbm.xml</value>
+			</list> -->
+		</property>
+	</bean>
+
+	<!-- 配置DAO -->
+	<bean id="UserDaoImpl" class="com.spz.bdqn.house.ssh.dao.impl.UserDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<!-- 配置业务层 -->
+	<bean id="UserServiceImpl" class="com.spz.bdqn.house.ssh.service.impl.UserServiceImpl">
+		<property name="userDao" ref="UserDaoImpl"></property>
+	</bean>
+
+	<!-- action层 (id为struts.xml中的class) ,必须都要增加scope="prototype"属性 -->
+	<bean id="UserAction" class="com.spz.bdqn.house.ssh.action.UserAction" scope="prototype">
+		<property name="userService" ref="UserServiceImpl"></property>
+	</bean>
+	
+	<!-- 定义事务管理器 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<!-- 定义事务属性,声明事务规则 -->
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="search*" read-only="true" />
+			<tx:method name="query*" read-only="true" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="register" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="do*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- proxy-target-class属性值决定是基于接口的还是基于类的代理被创建。
+	如果proxy-target-class 属性值被设置为true，那么基于类的代理将起作用（这时需要cglib库,即实现类类型）。
+	如果proxy-target-class属值被设置为false或者这个属性被省略，那么标准的JDK 基于接口的代理将 -->
+	<aop:config proxy-target-class="true">
+		<!-- 定义切入点 -->
+		<aop:pointcut id="pointcut" expression="execution(* com.spz.bdqn.house.ssh.service.*.*(..))" />
+		<!-- 将事务通知与切入点组合 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut" />
+	</aop:config>
+</beans>

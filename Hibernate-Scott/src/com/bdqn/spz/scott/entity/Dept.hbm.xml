@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.bdqn.spz.scott.entity">
+    <class name="Dept" table="DEPT" dynamic-update="true">
+        <id name="deptNo" type="integer" column="DEPTNO" >
+            <generator class="assigned"/>
+        </id>
+        <!-- 共享主键一对一 -->
+         <!-- <id name="deptNo" type="integer" column="DEPTNO" >
+            <generator class="foreign">
+            	Dept的主见来自于emp属性的id 
+            	<param name="property">emp</param>
+            </generator>
+        </id> -->
+        <!-- 共享主键是关系双方的主键是一样的值 constrained="true"这个意思是是否显示参照语句是添加约束的关键 -->
+        <!-- <one-to-one name="emp" class="Emp" constrained="true" cascade="save-update"></one-to-one> -->
+        
+        <property name="deptName" type="string" column="DEPTNAME"/>
+        <property name="location" type="string" column="LOC" />
+        
+         <!-- 唯一外键映射方式:双向一对一时property-ref可以指定要关联的外键的对象(对象必须存在)也可以省略,
+        	单向一对一时property-ref必须指定要关联的外键的属性(注意属性必须存在) -->
+        <one-to-one name="emp" class="Emp" property-ref="deptNo" cascade="all" ></one-to-one>
+        <!--一对多 -->
+        <!-- <bag name="emps" inverse="true">
+        	<key column="deptNo"></key>
+        	<one-to-many class="Emp"/>
+        </bag> -->
+    </class>
+</hibernate-mapping>

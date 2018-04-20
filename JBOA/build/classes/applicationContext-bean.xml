@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+	
+<!-- 施鹏振 -->
+
+	<bean id="leaveDao" class="com.bdqn.oa.dao.impl.LeaveDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+
+	<bean id="leaveService" class="com.bdqn.oa.service.impl.LeaveServiceImpl">
+		<property name="leaveDao" ref="leaveDao"></property>
+	</bean>
+	
+<!-- 李振  -->
+ <!-- Dao层注入 -->
+	
+	<bean id="SysEmployeeDao_z" class="com.bdqn.oa.dao.impl.SysEmployeeDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="IBizClaimVoucherDao_z" class="com.bdqn.oa.dao.impl.BizClaimVoucherDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<bean id="IBizCvDetaillyDao" class="com.bdqn.oa.dao.impl.BizCvDetaillyDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+	<bean id="IBizCheckResultDao" class="com.bdqn.oa.dao.impl.BizCheckResultDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	
+
+	
+  <!-- service   -->
+	<bean id="ISysEmployeeService_z" class="com.bdqn.oa.service.impl.SysEmployeeServiceImpl_z">
+		<property name="sysEmployeeDao_z" ref="SysEmployeeDao_z"></property>
+	</bean>	
+	
+	<bean id="IBizClaimVoucherService" class="com.bdqn.oa.service.impl.BizClaimVoucherServiceImpl">
+		<property name="bizClaimVoucherDao_z" ref="IBizClaimVoucherDao_z"></property>
+		<property name="sysEmployeeDao_z" ref="SysEmployeeDao_z"></property>
+	</bean>
+	
+	<bean id="IBizCvDetaillyService" class="com.bdqn.oa.service.impl.BizCvDetaillyServiceImpl">
+		<property name="bizCvDetaillyDao" ref="IBizCvDetaillyDao"></property>
+	</bean>
+	
+	<bean id="IBizCheckResultService" class="com.bdqn.oa.service.impl.BizCheckResultServiceImpl">
+		<property name="bizCheckResultDao" ref="IBizCheckResultDao"></property>
+	</bean>
+	
+
+	
+	<!-- web  可以自动装配                  -->
+	<bean id="SysEmployeeAction_z" class="com.bdqn.oa.web.SysEmployeeAction_z" scope="prototype">
+		<property name="sysEmployeeService_z" ref="ISysEmployeeService_z"></property>
+	</bean> 
+	
+	<bean id="BizClaimVoucherAction" class="com.bdqn.oa.web.BizClaimVoucherAction" scope="prototype">
+		<property name="bizCvDetaillyService" ref="IBizCvDetaillyService"></property>
+		<property name="bizClaimVoucherService" ref="IBizClaimVoucherService"></property>
+	</bean> 
+	
+	
+	
+<!-- 张婉君 -->
+		<!-- Dao注入 -->
+	<bean id="ClaimVoucherImpl" class="com.bdqn.oa.dao.impl.ClaimVoucherImpl_w">
+		<property name="sessionFactory" ref="sessionFactory"></property>
+	</bean>
+	<!-- service -->
+	<bean id="vouService" class="com.bdqn.oa.service.impl.ClaimVoucherServiceImpl_w">
+		<property name="vouDao" ref="ClaimVoucherImpl"></property>
+	</bean>
+	<!-- web 可写可不写，不写也会自动生成 -->
+	<bean id="ClaimVoucherAction" class="com.bdqn.oa.web.ClaimVoucherAction_w" scope="prototype">
+		<property name="vouService" ref="vouService"></property>
+		<property name="bizCheckResultService" ref="IBizCheckResultService"></property>
+	</bean>
+	
+</beans>

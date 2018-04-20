@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/tx 
+		http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+	<!-- 读取数据库配置文件 -->
+    <context:property-placeholder location="classpath:database.properties"/>
+	<!--jdbc-->
+	<bean class="org.springframework.jdbc.datasource.DriverManagerDataSource"></bean>
+	<!--dbcp-->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" scope="singleton">
+    		<property name="driverClassName" value="${driver}" />  
+			<property name="url" value="${url}" />  
+			<property name="username" value="${user}" />  
+			<property name="password" value="${password}" />
+			<property name="initialSize" value="${initialSize}"/>
+			<property name="maxActive" value="${maxActive}"/>
+			<property name="maxIdle" value="${maxIdle}"/>
+			<property name="minIdle" value="${minIdle}"/>
+			<property name="maxWait" value="${maxWait}"/>
+			<property name="removeAbandonedTimeout" value="${removeAbandonedTimeout}"/>
+			<property name="removeAbandoned" value="${removeAbandoned}"/>
+			<!-- sql 心跳 -->
+			<property name= "testWhileIdle" value="true"/>
+			<property name= "testOnBorrow" value="false"/>
+			<property name= "testOnReturn" value="false"/>
+			<!-- <property name= "validationQuery" value="select 1"/> -->
+			<property name= "timeBetweenEvictionRunsMillis" value="60000"/>
+			<property name= "numTestsPerEvictionRun" value="${maxActive}"/>
+    </bean>
+	<!-- 使用c3p0配置数据源 -->
+	<bean class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<!-- 指定连接数据库的驱动 -->
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<!-- 指定连接数据库的URL -->
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/MySchool"></property>
+		<!-- 指定连接数据库的用户名 -->
+		<property name="user" value="spz"></property>
+		<!-- 指定连接数据库的密码 -->
+		<property name="password" value="shipengzhen1997"></property>
+		<!-- 指定连接数据库的连接池的初始化大小 -->
+		<property name="initialPoolSize" value="5"></property>
+		<!-- 指定连接数据库的连接池最大连接数 -->
+		<property name="maxPoolSize" value="50"></property>
+		<!-- 指定连接数据库的连接池最大空闲时间 -->
+		<property name="maxIdleTime" value="30"></property>
+		<!-- 指定连接数据库的最大连接时间 -->
+		<property name="maxConnectionAge" value="1000"></property>
+	</bean>
+
+	<!-- 配置Hibernate的相关属性 -->
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+		<!-- 注入连接池 -->
+		<property name="dataSource" ref="dataSource"></property>
+		<!-- 配置hibernate的属性 -->
+		<property name="hibernateProperties">
+			<props>
+				<!--使用的数据库类型 -->
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<!--是否将运行期生成的SQL输出到日志以供调试 -->
+				<prop key="hibernate.show_sql">true</prop>
+				<!--是否格式化SQL -->
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!-- <prop key="javax.persistence.validation.mode">none</prop> -->
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>com/spz/sshm/entity/Student.hbm.xml</value>
+				<value>com/spz/sshm/entity/Subject.hbm.xml</value>
+				<value>com/spz/sshm/entity/Teacher.hbm.xml</value>
+				<value>com/spz/sshm/entity/Result.hbm.xml</value>
+				<value>com/spz/sshm/entity/Grade.hbm.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- 定义事务管理器 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<!-- 定义事务属性,声明事务规则 -->
+		<tx:attributes>
+			<tx:method name="find*" read-only="true" />
+			<tx:method name="search*" read-only="true" />
+			<tx:method name="query*" read-only="true" />
+			<tx:method name="add*" propagation="REQUIRED" />
+			<tx:method name="register" propagation="REQUIRED" />
+			<tx:method name="del*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+			<tx:method name="do*" propagation="REQUIRED" />
+			<tx:method name="*" propagation="REQUIRED" read-only="true" />
+		</tx:attributes>
+	</tx:advice>
+
+	<aop:config proxy-target-class="true">
+		<!-- 定义切入点 -->
+		<aop:pointcut id="pointcut"
+			expression="execution(* com.spz.bdqn.house.ssh.service.*.*(..))" />
+		<!-- 将事务通知与切入点组合 -->
+		<aop:advisor advice-ref="txAdvice" pointcut-ref="pointcut" />
+	</aop:config>
+
+
+
+	<!-- 配置DAO -->
+	<bean id="StudentDaoImpl" class="com.spz.sshm.dao.impl.StudentDaoImpl">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- 配置业务层 -->
+	<bean id="StudentServiceImpl" class="com.spz.sshm.service.impl.StudentServiceImpl">
+		<property name="studentDao" ref="StudentDaoImpl"></property>
+	</bean>
+	<!-- action层 (id为struts.xml中的class) ,必须都要增加scope="prototype"属性 -->
+	<bean id="StudentAction" class="com.spz.sshm.action.StudentAction" scope="prototype">
+		<property name="studentService" ref="StudentServiceImpl"></property>
+	</bean>
+</beans>

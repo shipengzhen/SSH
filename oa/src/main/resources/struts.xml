@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Sof tware Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>
+	<!-- <package name="default_json" namespace="/" extends="json-default"> -->
+	<package name="default" namespace="/" extends="struts-default">
+	
+		<!-- 定义拦截器 -->
+		<interceptors>
+			<!-- 权限控制拦截器 -->
+			<interceptor name="myAuthorization"
+				class="com.bdqn.oa.interceptor.AuthorizationInterceptor">
+			</interceptor>
+			<!-- 定义拦截器栈 -->
+			<interceptor-stack name="myStack">
+				<!--指定引用的拦截器 -->
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="myAuthorization"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<!--定义默认的拦截器引用 -->
+		<!-- <default-interceptor-ref name="defaultStack"></default-interceptor-ref> -->
+
+		<default-action-ref name="defaultAction"></default-action-ref>
+		<global-results>
+			<result name="500">500.jsp</result>
+		</global-results>
+		<action name="defaultAction">
+			<result>404.jsp</result>
+		</action>
+
+		<!-- 登录 -->
+		<action name="login" class="com.bdqn.oa.action.SysEmployeeAction_z"
+			method="login">
+			<result name="success">/welcome.jsp</result>
+			<result name="error">/login.jsp</result>
+		</action>
+
+		<!--跳转新增请假页面 -->
+		<action name="skipAddLeave" class="com.bdqn.oa.action.LeaveAction"
+			method="skipAddLeave">
+			<result name="success">addleave.jsp</result>
+		</action>
+
+		<!-- 新增请假 -->
+		<action name="addLeave" class="com.bdqn.oa.action.LeaveAction"
+			method="addLeave">
+			<result name="success" type="redirectAction">skipLeaveList</result>
+			<result name="error">addleave.jsp</result>
+		</action>
+
+		<!-- 跳转请假列表 -->
+		<action name="skipLeaveList" class="com.bdqn.oa.action.LeaveAction"
+			method="skipLeaveList">
+			<result name="success">leaveList.jsp</result>
+			<interceptor-ref name="myStack" />
+		</action>
+
+		<!--查询及分页 -->
+		<action name="leaveListPaging" class="com.bdqn.oa.action.LeaveAction"
+			method="leaveListPaging">
+			<result name="success">leaveList.jsp</result>
+			<interceptor-ref name="myStack" />
+		</action>
+
+		<!--查询请假详情 -->
+		<action name="selectleave" class="com.bdqn.oa.action.LeaveAction"
+			method="selectleave">
+			<result name="success">selectleave.jsp</result>
+		</action>
+
+		<!-- 跳转审核请假页面 -->
+		<action name="skipCheckLeave" class="com.bdqn.oa.action.LeaveAction"
+			method="skipCheckLeave">
+			<result name="success">SPleave.jsp</result>
+		</action>
+
+		<!-- 审核请假 -->
+		<action name="checkLeave" class="com.bdqn.oa.action.LeaveAction"
+			method="checkLeave">
+			<result name="success" type="redirectAction">skipLeaveList</result>
+			<result name="error" type="redirectAction">skipCheckLeave</result>
+		</action>
+
+	</package>
+</struts>    

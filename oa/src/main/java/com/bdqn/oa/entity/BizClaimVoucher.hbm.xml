@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- 
+   报销单表
+-->
+<hibernate-mapping>
+    <class name="com.bdqn.oa.entity.BizClaimVoucher" table="BIZ_CLAIM_VOUCHER" schema="SCOTT">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" precision="6" scale="0" />
+            <!-- 序列名字 xx_id-->
+           	 <generator class="increment">
+             	<param name="sequence">BIZ_claim_voucher_id</param>
+            </generator>
+        </id>
+        <many-to-one name="sysEmployeeByProposerEid" class="com.bdqn.oa.entity.SysEmployee" fetch="select">
+            <column name="PROPOSER_EID" precision="6" scale="0" not-null="true" />
+        </many-to-one>
+        <many-to-one name="sysEmployeeByExecutorEid" class="com.bdqn.oa.entity.SysEmployee" fetch="select">
+            <column name="EXECUTOR_EID" precision="6" scale="0" not-null="true" />
+        </many-to-one>
+        <property name="begindate" type="java.util.Date">
+            <column name="BEGINDATE" length="7" not-null="true" />
+        </property>
+        <property name="finishdate" type="java.util.Date">
+            <column name="FINISHDATE" length="7" />
+        </property>
+        <property name="event" type="java.lang.String">
+            <column name="EVENT" />
+        </property>
+        <property name="moeny" type="java.lang.Double">
+            <column name="MOENY" precision="9" />
+        </property>
+        <property name="status" type="java.lang.String">
+            <column name="STATUS" length="20" />
+        </property>
+        <set name="bizCheckResults" inverse="true">
+            <key>
+                <column name="CLAIM_ID" precision="6" scale="0" not-null="true" />
+            </key>
+            <one-to-many class="com.bdqn.oa.entity.BizCheckResult" />
+        </set>
+        <set name="bizCvDetaillies" inverse="true">
+            <key>
+                <column name="CLAIM_ID" precision="6" scale="0" not-null="true" />
+            </key>
+            <one-to-many class="com.bdqn.oa.entity.BizCvDetailly" />
+        </set>
+    </class>
+</hibernate-mapping>

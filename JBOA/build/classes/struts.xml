@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<package name="default6" extends="struts-default">
+		<!-- 登录 -->
+		<action name="login" class="SysEmployeeAction_z" method="login">
+			<result name="success">/welcome.jsp</result>
+			<result name="error">/login.jsp</result>
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+		</action>
+		
+		<!-- 注销 -->
+		<action name="zx" class="SysEmployeeAction_z" method="zx">
+			<result name="success">/login.jsp</result>
+		</action>
+		
+	</package>
+	
+	<package name="default" extends="struts-default">
+		
+		<interceptors>
+    		<!-- 定义拦截器 -->
+    		<interceptor name="MyInterceptor" class="com.bdqn.oa.util.MyInterceptor"></interceptor>
+    		
+    		<interceptor-stack name="Interceptorstack">
+    			<interceptor-ref name="defaultStack"></interceptor-ref>
+    			<interceptor-ref name="MyInterceptor"></interceptor-ref>
+    		</interceptor-stack>
+    	</interceptors>
+    	
+    	<default-interceptor-ref name="Interceptorstack"></default-interceptor-ref>
+    	<default-action-ref name="defaultAction"></default-action-ref>
+    	
+    	<global-results>
+    		<result name="404">404.jsp</result>
+    		<result name="500">500.jsp</result>
+    	</global-results>
+    	
+    	<action name="defaultAction">
+    		<result>404.jsp</result>
+    	</action>
+<!-- 李振 -->
+		<!-- 新增报销单 -->
+		<action name="addcxd" class="BizClaimVoucherAction" method="addcxd">
+			<result name="success">/cvList.jsp</result>
+			<result name="input">/addcv.jsp</result>
+			<result name="error">/addcv.jsp</result>
+		</action>
+		
+		
+		<!-- 查询 分页-->
+		<action name="findAllfy" class="BizClaimVoucherAction"  method="findAllfy">
+			<result name="success">/cvList.jsp</result>
+			<result name="input">/cvList.jsp</result>
+			<result name="error">/cvList.jsp</result>
+		</action>
+		<!-- 详情 -->
+		<action name="selectCv" class="BizClaimVoucherAction"  method="selectCv">
+			<result name="success">/selectCv.jsp</result>
+			<result name="input">/cvList.jsp</result>
+			<result name="error">/cvList.jsp</result>
+		</action>
+		<!-- 进入修改 -->
+		<action name="updateCv" class="BizClaimVoucherAction"  method="updateCv">
+			<result name="success">/updateCv.jsp</result>
+			<result name="input">/cvList.jsp</result>
+			<result name="error">/cvList.jsp</result>
+		</action>
+		
+		<!-- 修改 -->
+		<action name="updateCvd" class="BizClaimVoucherAction"  method="updateCvd">
+			<result name="success">/cvList.jsp</result>
+			<result name="input">/updateCv.jsp</result>
+			<result name="error">/updateCv.jsp</result>
+		</action>
+
+		<action name="welcome">
+			<interceptor-ref name="MyInterceptor"></interceptor-ref>
+		</action>
+<!-- 张婉君 -->
+		<!-- 部总经理 分页 查询 -->
+		 <action name="getVouList" class="ClaimVoucherAction" method="getVouList"> 
+        	<result name="success">cvList.jsp</result>
+		</action>	
+		
+		<!-- 部总经理 分页 查询 -->
+		 <action name="getVoucher" class="ClaimVoucherAction" method="getVoucher"> 
+        	<result name="success">SPcv.jsp</result>
+		</action>
+		
+		<!-- 审批  -->
+		 <action name="saveCheckResult2" class="ClaimVoucherAction" method="saveCheckResult"> 
+        	<result name="success">cvList.jsp</result>
+		</action>
+		
+		
+		
+		
+		
+<!-- 施鹏振 -->
+		
+		<!--跳转新增请假页面 -->
+		<action name="skipAddLeave" class="com.bdqn.oa.web.LeaveAction"
+			method="skipAddLeave">
+			<result name="success">addleave.jsp</result>
+		</action>
+
+		<!-- 新增请假 -->
+		<action name="addLeave" class="com.bdqn.oa.web.LeaveAction"
+			method="addLeave">
+			<result name="success" type="redirectAction">skipLeaveList</result>
+			<result name="error">addleave.jsp</result>
+		</action>
+
+		<!-- 跳转请假列表 -->
+		<action name="skipLeaveList" class="com.bdqn.oa.web.LeaveAction"
+			method="skipLeaveList">
+			<result name="success">leaveList.jsp</result>
+		</action>
+
+		<!--查询及分页 -->
+		<action name="leaveListPaging" class="com.bdqn.oa.web.LeaveAction"
+			method="leaveListPaging">
+			<result name="success">leaveList.jsp</result>
+		</action>
+
+		<!--查询请假详情 -->
+		<action name="selectleave" class="com.bdqn.oa.web.LeaveAction"
+			method="selectleave">
+			<result name="success">selectleave.jsp</result>
+		</action>
+
+		<!-- 跳转审核请假页面 -->
+		<action name="skipCheckLeave" class="com.bdqn.oa.web.LeaveAction"
+			method="skipCheckLeave">
+			<result name="success">SPleave.jsp</result>
+		</action>
+
+		<!-- 审核请假 -->
+		<action name="checkLeave" class="com.bdqn.oa.web.LeaveAction"
+			method="checkLeave">
+			<result name="success" type="redirectAction">skipLeaveList</result>
+			<result name="error" type="redirectAction">skipCheckLeave</result>
+		</action>
+		
+	</package>
+	 <package name="default_json" namespace="/" extends="json-default">   
+    	
+        <action name="delCd" class="BizClaimVoucherAction" method="delCd"> 
+        	<result type="json">
+        		<param name="root">dept</param>
+        	</result>
+		</action>	  
+		                                 
+    </package>
+
+	
+	
+</struts>
